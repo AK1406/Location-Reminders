@@ -1,4 +1,24 @@
 <resources>
-<!--    TODO: Before you run your application, you need a Google Maps API key.-->
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false"></string>
+    <!--
+    TODO: Before you run your application, you need a Google Maps API key.
+
+    To get one, follow this link, follow the directions and press "Create" at the end:
+
+    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=2E:97:47:1F:34:38:EE:73:4B:38:E6:00:A3:21:BB:F3:EF:A2:5F:13%3Bcom.udacity.project4
+
+    You can also add your credentials to an existing key, using these values:
+
+    Package name:
+    com.udacity.project4
+
+    SHA-1 certificate fingerprint:
+    2E:97:47:1F:34:38:EE:73:4B:38:E6:00:A3:21:BB:F3:EF:A2:5F:13
+
+    Alternatively, follow the directions here:
+    https://developers.google.com/maps/documentation/android/start#get-key
+
+    Once you have your key (it starts with "AIza"), replace the "google_maps_key"
+    string in this file.
+    -->
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBs7ytVnlHLE15EbnNs3ER-4HGgu7rX_mU</string>
 </resources>

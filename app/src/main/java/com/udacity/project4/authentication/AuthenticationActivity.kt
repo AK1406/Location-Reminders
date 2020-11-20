@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.firebase.ui.auth.AuthUI
@@ -42,34 +43,30 @@ class AuthenticationActivity : AppCompatActivity() {
                     TAG,
                     "Successfully signed in user ${FirebaseAuth.getInstance().currentUser?.displayName}!"
             )
+            Toast.makeText(this,"SignIn Successfull",Toast.LENGTH_LONG).show()
             val intent = Intent(this,RemindersActivity::class.java)
             startActivity(intent)
+            finish()
         } else {
             // Sign in failed. If response is null the user canceled the
             // sign-in flow using the back button. Otherwise check
             // response.getError().getErrorCode() and handle the error.
             Log.i(TAG, "Sign in unsuccessful ${response?.error?.errorCode}")
+            Toast.makeText(this,"SignIn failed",Toast.LENGTH_LONG).show()
         }
     }
 }
 
 
     private fun launchSignInFlow() {
-        // Give users the option to sign in / register with their email
-        // If users choose to register with their email,
-        // they will need to create a password as well
         val providers = arrayListOf(
                 AuthUI.IdpConfig.EmailBuilder().build()
-                //
         )
 
-        // Create and launch sign-in intent.
-        // We listen to the response of this activity with the
-        // SIGN_IN_RESULT_CODE code
         startActivityForResult(
                 AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders(
                         providers
-                ).build(), AuthenticationActivity.SIGN_IN_RESULT_CODE
+                ).build(), SIGN_IN_RESULT_CODE
         )
     }
 //          TODO: a bonus is to customize the sign in flow to look nice using :

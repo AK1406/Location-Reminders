@@ -34,6 +34,12 @@
     <string name="err_enter_title">Please enter title</string>
     <string name="err_select_location">Please select location</string>
 
+    <!--    Geofence Status Strings-->
+    <string name="geofences_added">Clue Geofence added.</string>
+    <string name="geofences_removed">Geofences removed.</string>
+    <string name="geofence_over">You have found the treasure! Congratulations!</string>
+
+
     <!-- Error strings -->
     <string name="geofence_unknown_error">Unknown error: the Geofence service is not available now.</string>
     <string name="geofence_not_available">Geofence service is not available now. Go to Settings>Location>Mode and choose High accuracy.</string>
@@ -42,4 +48,6 @@
     <string name="error_adding_geofence">Error Happened, Can\'t Add Geofence</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="unknown_geofence_error">unknown geofence error</string>
+    <string name="geofences_not_removed">Geogence not removed</string>
 </resources>

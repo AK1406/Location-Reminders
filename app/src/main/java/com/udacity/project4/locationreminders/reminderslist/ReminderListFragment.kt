@@ -1,9 +1,13 @@
 package com.udacity.project4.locationreminders.reminderslist
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import androidx.databinding.DataBindingUtil
+import com.firebase.ui.auth.AuthUI
 import com.udacity.project4.R
+import com.udacity.project4.authentication.AuthenticationActivity
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentRemindersBinding
@@ -17,13 +21,13 @@ class ReminderListFragment : BaseFragment() {
     override val _viewModel: RemindersListViewModel by viewModel()
     private lateinit var binding: FragmentRemindersBinding
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         binding =
             DataBindingUtil.inflate(
-                inflater,
-                R.layout.fragment_reminders, container, false
+                    inflater,
+                    R.layout.fragment_reminders, container, false
             )
         binding.viewModel = _viewModel
 
@@ -54,11 +58,12 @@ class ReminderListFragment : BaseFragment() {
     private fun navigateToAddReminder() {
         //use the navigationCommand live data to navigate between the fragments
         _viewModel.navigationCommand.postValue(
-            NavigationCommand.To(
-                ReminderListFragmentDirections.toSaveReminder()
-            )
+                NavigationCommand.To(
+                        ReminderListFragmentDirections.toSaveReminder()
+                )
         )
     }
+
 
     private fun setupRecyclerView() {
         val adapter = RemindersListAdapter {
@@ -72,6 +77,15 @@ class ReminderListFragment : BaseFragment() {
         when (item.itemId) {
             R.id.logout -> {
 //                TODO: add the logout implementation
+                context?.let {
+                    AuthUI.getInstance()
+                            .signOut(it)
+                            .addOnCompleteListener {
+                                val intent =
+                                        Intent(activity, AuthenticationActivity::class.java)
+                                startActivity(intent)
+                            }
+                }
             }
         }
         return super.onOptionsItemSelected(item)
