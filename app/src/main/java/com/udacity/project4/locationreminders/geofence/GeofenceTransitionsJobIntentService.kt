@@ -1,35 +1,21 @@
 package com.udacity.project4.locationreminders.geofence
 
-import android.Manifest
-import android.annotation.SuppressLint
-import android.annotation.TargetApi
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.IntentSender
-import android.content.pm.PackageManager
-import android.net.Uri
-import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
-import androidx.core.app.ActivityCompat
 import androidx.core.app.JobIntentService
-import com.google.android.gms.common.api.ResolvableApiException
-import com.google.android.gms.location.*
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.material.snackbar.Snackbar
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
-import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import com.udacity.project4.utils.sendNotification
 import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
-import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingEvent
 import com.udacity.project4.locationreminders.data.ReminderDataSource
+import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import org.koin.android.ext.android.get
 
 class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
@@ -47,9 +33,9 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
         //        TODO: call this to start the JobIntentService to handle the geofencing transition events
         fun enqueueWork(context: Context, intent: Intent) {
             enqueueWork(
-                context,
-                GeofenceTransitionsJobIntentService::class.java, JOB_ID,
-                intent
+                    context,
+                    GeofenceTransitionsJobIntentService::class.java, JOB_ID,
+                    intent
             )
         }
 
@@ -97,14 +83,14 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
                 val reminderDTO = result.data
                 //send a notification to the user with the reminder details
                 sendNotification(
-                    this@GeofenceTransitionsJobIntentService, ReminderDataItem(
+                        this@GeofenceTransitionsJobIntentService, ReminderDataItem(
                         reminderDTO.title,
                         reminderDTO.description,
                         reminderDTO.location,
                         reminderDTO.latitude,
                         reminderDTO.longitude,
                         reminderDTO.id
-                    )
+                )
                 )
             }
         }

@@ -4,36 +4,27 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Intent
-import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.findNavController
-import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.common.api.ResolvableApiException
-import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
-import com.google.android.material.snackbar.Snackbar
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
-import com.udacity.project4.base.NavigationCommand
 
 import com.udacity.project4.databinding.FragmentSelectLocationBinding
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.inject
-import java.util.*
 
 class SelectLocationFragment : BaseFragment() , OnMapReadyCallback{
 
@@ -61,17 +52,14 @@ class SelectLocationFragment : BaseFragment() , OnMapReadyCallback{
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(true)
 
-//        TODO: add the map setup implementation
+//        DONE: add the map setup implementation
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = childFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-//        TODO: zoom to the user location after taking his permission
-//        TODO: add style to the map
-//        TODO: put a marker to location that the user selected
 
 
-//        TODO: call this function after the user confirms on the selected location
+//        DONE: call this function after the user confirms on the selected location
         binding.saveLocation.setOnClickListener{
             onLocationSelected()
             view?.findNavController()?.navigate(R.id.action_selectLocationFragment_to_saveReminderFragment)
@@ -83,12 +71,15 @@ class SelectLocationFragment : BaseFragment() , OnMapReadyCallback{
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
 
+        //      DONE: put a marker to location that the user selected
+
         setPoiClick(map)
+        //        DONE: add style to the map
         setMapStyle(map)
         enableMyLocation()
     }
     private fun onLocationSelected() {
-        //        TODO: When the user confirms on the selected location,
+        //        DONE: When the user confirms on the selected location,
         //         send back the selected location details to the view model
         //         and navigate back to the previous fragment to save the reminder and add the geofence
             _viewModel.latitude.value = lat
@@ -103,7 +94,7 @@ class SelectLocationFragment : BaseFragment() , OnMapReadyCallback{
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        // TODO: Change the map type based on the user's selection.
+        // DONE: Change the map type based on the user's selection.
         R.id.normal_map -> {
             map.mapType = GoogleMap.MAP_TYPE_NORMAL
             true
@@ -195,6 +186,9 @@ class SelectLocationFragment : BaseFragment() , OnMapReadyCallback{
                 REQUEST_LOCATION_PERMISSION
             )
         }
+        //        DONE: zoom to the user location after taking his permission
+
+
         map.moveCamera(CameraUpdateFactory.zoomIn())
     }
 

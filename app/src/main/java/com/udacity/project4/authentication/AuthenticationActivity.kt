@@ -27,12 +27,12 @@ class AuthenticationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_authentication)
 
-//         TODO: Implement the create account and sign in using FirebaseUI, use sign in using email and sign in using Google
+//         DONE: Implement the create account and sign in using FirebaseUI, use sign in using email and sign in using Google
 
         binding.authButton.setOnClickListener { launchSignInFlow() }
 
     }
-//          TODO: If the user was authenticated, send him to RemindersActivity
+//          DONE: If the user was authenticated, send him to RemindersActivity
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)
     if (requestCode == SIGN_IN_RESULT_CODE) {
@@ -44,7 +44,7 @@ class AuthenticationActivity : AppCompatActivity() {
                     "Successfully signed in user ${FirebaseAuth.getInstance().currentUser?.displayName}!"
             )
             Toast.makeText(this,"SignIn Successfull",Toast.LENGTH_LONG).show()
-            val intent = Intent(this,RemindersActivity::class.java)
+            val intent = Intent(this, RemindersActivity::class.java)
             startActivity(intent)
             finish()
         } else {
@@ -69,9 +69,6 @@ class AuthenticationActivity : AppCompatActivity() {
                 ).build(), SIGN_IN_RESULT_CODE
         )
     }
-//          TODO: a bonus is to customize the sign in flow to look nice using :
-        //https://github.com/firebase/FirebaseUI-Android/blob/master/auth/README.md#custom-layout
-
 
     companion object {
         const val TAG = "MainFragment"

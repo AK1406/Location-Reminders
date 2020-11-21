@@ -20,11 +20,12 @@ import com.udacity.project4.locationreminders.geofence.GeofenceTransitionsJobInt
  */
 
 class GeofenceBroadcastReceiver : BroadcastReceiver() {
-    private val TAG = "GeofenceBroadcastReceiv"
+    private val TAG = "GeofenceBroadcastReceiver"
     override fun onReceive(context: Context, intent: Intent) {
+        //DONE: implement the onReceive method to receive the geofencing events at the background
         val geofenceEvent = GeofencingEvent.fromIntent(intent)
         if (geofenceEvent.hasError()) {
-            Log.d(TAG, "onReceive: Error ")
+            Log.d(TAG, "Error on receive !")
             return
         }
 

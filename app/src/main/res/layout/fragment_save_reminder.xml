@@ -11,10 +11,10 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/activity_maps_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
-        android:id="@+id/activity_maps_main">
+        android:background="@color/white">
 
         <EditText
             android:id="@+id/reminderTitle"

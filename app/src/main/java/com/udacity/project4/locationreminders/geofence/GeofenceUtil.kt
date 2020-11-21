@@ -9,6 +9,7 @@ import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.location.GeofencingRequest
 import com.google.android.gms.maps.model.LatLng
+import com.udacity.project4.R
 
 class GeofenceHelper(base: Context?) :
         ContextWrapper(base) {
@@ -20,12 +21,7 @@ class GeofenceHelper(base: Context?) :
                 .build()
     }
 
-    fun getGeofence(
-            ID: String,
-            latLng: LatLng,
-            radius: Float,
-            transitionTypes: Int
-    ): Geofence {
+    fun getGeofence(ID: String, latLng: LatLng, radius: Float, transitionTypes: Int): Geofence {
         return Geofence.Builder()
                 .setCircularRegion(latLng.latitude, latLng.longitude, radius)
                 .setRequestId(ID)
@@ -48,15 +44,18 @@ class GeofenceHelper(base: Context?) :
     fun getErrorString(e: Exception): String {
         if (e is ApiException) {
             when (e.statusCode) {
-                GeofenceStatusCodes.GEOFENCE_NOT_AVAILABLE -> return "GEOFENCE_NOT_AVAILABLE"
-                GeofenceStatusCodes.GEOFENCE_TOO_MANY_GEOFENCES -> return "GEOFENCE_TOO_MANY_GEOFENCES"
-                GeofenceStatusCodes.GEOFENCE_TOO_MANY_PENDING_INTENTS -> return "GEOFENCE_TOO_MANY_PENDING_INTENTS"
+                GeofenceStatusCodes.GEOFENCE_NOT_AVAILABLE -> return getString(
+                        R.string.geofence_not_available)
+                GeofenceStatusCodes.GEOFENCE_TOO_MANY_GEOFENCES -> return getString(
+                        R.string.geofence_too_many_geofences)
+                GeofenceStatusCodes.GEOFENCE_TOO_MANY_PENDING_INTENTS -> return getString(
+                        R.string.geofence_too_many_pending_intents)
             }
         }
         return e.localizedMessage
     }
 
     companion object {
-        private const val TAG = "GeofenceHelper"
+        private const val TAG = "GeofenceUtil"
     }
 }

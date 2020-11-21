@@ -3,6 +3,7 @@ package com.udacity.project4.locationreminders.data.local
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
+import com.udacity.project4.locationreminders.data.local.RemindersDao
 import kotlinx.coroutines.*
 
 /**
@@ -14,8 +15,8 @@ import kotlinx.coroutines.*
  * @param ioDispatcher a coroutine dispatcher to offload the blocking IO tasks
  */
 class RemindersLocalRepository(
-    private val remindersDao: RemindersDao,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+        private val remindersDao: RemindersDao,
+        private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ReminderDataSource {
 
     /**
