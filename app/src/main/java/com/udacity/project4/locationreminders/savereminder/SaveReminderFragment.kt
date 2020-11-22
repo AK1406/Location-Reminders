@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.observe
 import androidx.navigation.findNavController
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
@@ -70,7 +71,7 @@ class SaveReminderFragment : BaseFragment() {
             val longitude = _viewModel.longitude.value
             val geofenceId = UUID.randomUUID().toString()
 
-//            TODO: use the user entered reminder details to:
+//            DONE: use the user entered reminder details to:
 //             1) add a geofencing request
 //             2) save the reminder to the local db
             if (latitude != null && longitude != null && !TextUtils.isEmpty(title))
@@ -78,7 +79,13 @@ class SaveReminderFragment : BaseFragment() {
 
             _viewModel.validateAndSaveReminder(ReminderDataItem(title,description,location, latitude,longitude))
 
-            view.findNavController().navigate(R.id.action_saveReminderFragment_to_reminderListFragment)
+            _viewModel.navigateToReminderList.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                if(it){
+                    view.findNavController().navigate(R.id.action_saveReminderFragment_to_reminderListFragment)
+                    _viewModel.navigateToReminderList()
+                }
+            })
+
         }
     }
 

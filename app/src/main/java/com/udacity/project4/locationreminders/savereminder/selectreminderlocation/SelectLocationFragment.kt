@@ -2,6 +2,7 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Activity
 import android.content.IntentSender
@@ -28,6 +29,7 @@ import com.google.android.gms.maps.model.*
 import com.google.android.material.snackbar.Snackbar
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
+import com.udacity.project4.base.NavigationCommand
 
 import com.udacity.project4.databinding.FragmentSelectLocationBinding
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
@@ -45,10 +47,11 @@ class SelectLocationFragment : BaseFragment() , OnMapReadyCallback{
     private val REQUEST_LOCATION_PERMISSION = 1
 
 
-    lateinit var Poi : PointOfInterest
+    var Poi : PointOfInterest? =null
     var lat : Double = 0.0
     var long : Double = 0.0
     var title = ""
+    var isLocationSelected = false
 
     //Use Koin to get the view model of the SaveReminder
     override val _viewModel: SaveReminderViewModel by inject()
@@ -75,8 +78,11 @@ class SelectLocationFragment : BaseFragment() , OnMapReadyCallback{
 
 //        DONE: call this function after the user confirms on the selected location
         binding.saveLocation.setOnClickListener{
-            onLocationSelected()
-            view?.findNavController()?.navigate(R.id.action_selectLocationFragment_to_saveReminderFragment)
+            if(Poi!= null) {
+                onLocationSelected()
+            }else{
+                Toast.makeText(context,"Select a location !",Toast.LENGTH_LONG).show()
+            }
         }
 
         return binding.root
@@ -100,6 +106,7 @@ class SelectLocationFragment : BaseFragment() , OnMapReadyCallback{
             _viewModel.longitude.value = long
             _viewModel.selectedPOI.value = Poi
         _viewModel.reminderSelectedLocationStr.value = title
+        _viewModel.navigationCommand.postValue(NavigationCommand.Back)
     }
 
 
@@ -144,6 +151,7 @@ class SelectLocationFragment : BaseFragment() , OnMapReadyCallback{
             long = poi.latLng.longitude
             title = poi.name
         }
+        isLocationSelected=true
     }
 
     private fun setMapStyle(map: GoogleMap) {
@@ -189,10 +197,10 @@ class SelectLocationFragment : BaseFragment() , OnMapReadyCallback{
         val locationRequest = create().apply {
             priority = PRIORITY_LOW_POWER
         }
-        val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
+        val requestBuilder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
         val settingsClient = LocationServices.getSettingsClient(activity!!)
         val locationSettingsResponseTask =
-                settingsClient.checkLocationSettings(builder.build())
+                settingsClient.checkLocationSettings(requestBuilder.build())
         locationSettingsResponseTask.addOnFailureListener { exception ->
             if (exception is ResolvableApiException && resolve) {
                 try {
@@ -215,20 +223,11 @@ class SelectLocationFragment : BaseFragment() , OnMapReadyCallback{
         }
     }
 
+    @SuppressLint("MissingPermission")
     private fun enableMyLocation() {
         if (isPermissionGranted()) {
-            if (ActivityCompat.checkSelfPermission(
-                            context!!,
-                            Manifest.permission.ACCESS_FINE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                            context!!,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED
-            )
-
             map.isMyLocationEnabled = true
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                // All permissions are granted !
                 checkDeviceLocationSettings()
             } else {
                 requestQPermission()
@@ -260,7 +259,6 @@ class SelectLocationFragment : BaseFragment() , OnMapReadyCallback{
                     Manifest.permission.ACCESS_BACKGROUND_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
             if (hasBackgroundPermission) {
-                // All permissions are granted !
                 checkDeviceLocationSettings()
             } else {
                 ActivityCompat.requestPermissions(
