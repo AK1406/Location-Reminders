@@ -2,22 +2,30 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 
 
 import android.Manifest
-import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.app.Activity
+import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.findNavController
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.LocationRequest.*
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.android.material.snackbar.Snackbar
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
 
@@ -26,10 +34,16 @@ import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.inject
 
+
+private const val REQUEST_CODE_BACKGROUND = 102929
+private const val REQUEST_TURN_DEVICE_LOCATION_ON = 12433
+private const val TAG = "SelectLocation"
+
 class SelectLocationFragment : BaseFragment() , OnMapReadyCallback{
 
     private lateinit var map: GoogleMap
     private val REQUEST_LOCATION_PERMISSION = 1
+
 
     lateinit var Poi : PointOfInterest
     var lat : Double = 0.0
@@ -162,22 +176,63 @@ class SelectLocationFragment : BaseFragment() , OnMapReadyCallback{
 
     override fun onRequestPermissionsResult(
             requestCode: Int,
-            permissions: Array<String>,
-            grantResults: IntArray) {
-        // Check if location permissions are granted and if so enable the
-        // location data layer.
-        if (requestCode == REQUEST_LOCATION_PERMISSION) {
-            if (grantResults.isNotEmpty() && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                enableMyLocation()
-            }
+            permissions: Array<out String>,
+            grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE_BACKGROUND) {
+            checkDeviceLocationSettings()
         }
     }
 
+    private fun checkDeviceLocationSettings(resolve: Boolean = true) {
+        val locationRequest = create().apply {
+            priority = PRIORITY_LOW_POWER
+        }
+        val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
+        val settingsClient = LocationServices.getSettingsClient(activity!!)
+        val locationSettingsResponseTask =
+                settingsClient.checkLocationSettings(builder.build())
+        locationSettingsResponseTask.addOnFailureListener { exception ->
+            if (exception is ResolvableApiException && resolve) {
+                try {
+                    exception.startResolutionForResult(
+                            activity!!,
+                            REQUEST_TURN_DEVICE_LOCATION_ON
+                    )
+                } catch (sendEx: IntentSender.SendIntentException) {
+                    Log.d(TAG, "Error getting location settings resolution: " + sendEx.message)
+                }
+            } else {
+                Snackbar.make(
+                        view!!,
+                        R.string.location_required_error, Snackbar.LENGTH_INDEFINITE
+                ).setAction(android.R.string.ok) {
+                    checkDeviceLocationSettings()
+                }.show()
+            }
 
-    @SuppressLint("MissingPermission")
+        }
+    }
+
     private fun enableMyLocation() {
         if (isPermissionGranted()) {
+            if (ActivityCompat.checkSelfPermission(
+                            context!!,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                            context!!,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED
+            )
+
             map.isMyLocationEnabled = true
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                // All permissions are granted !
+                checkDeviceLocationSettings()
+            } else {
+                requestQPermission()
+            }
 
         } else {
             ActivityCompat.requestPermissions(
@@ -190,6 +245,31 @@ class SelectLocationFragment : BaseFragment() , OnMapReadyCallback{
 
 
         map.moveCamera(CameraUpdateFactory.zoomIn())
+    }
+
+    @TargetApi(Build.VERSION_CODES.Q)
+    private fun requestQPermission() {
+        val hasForegroundPermission = ActivityCompat.checkSelfPermission(
+                activity!!,
+                Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (hasForegroundPermission) {
+            val hasBackgroundPermission = ActivityCompat.checkSelfPermission(
+                    activity!!,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+            if (hasBackgroundPermission) {
+                // All permissions are granted !
+                checkDeviceLocationSettings()
+            } else {
+                ActivityCompat.requestPermissions(
+                        activity!!,
+                        arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                        REQUEST_CODE_BACKGROUND
+                )
+            }
+        }
     }
 
 }

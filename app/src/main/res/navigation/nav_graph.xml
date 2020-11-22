@@ -10,7 +10,8 @@
         android:label="ReminderListFragment">
         <action
             android:id="@+id/to_save_reminder"
-            app:destination="@id/saveReminderFragment" />
+            app:destination="@id/saveReminderFragment"
+         />
     </fragment>
     <activity
         android:id="@+id/mainActivity"
@@ -25,7 +26,7 @@
             app:destination="@id/selectLocationFragment" />
         <action
             android:id="@+id/action_saveReminderFragment_to_reminderListFragment"
-            app:destination="@id/reminderListFragment" />
+            app:destination="@id/reminderListFragment"/>
 
     </fragment>
     <fragment

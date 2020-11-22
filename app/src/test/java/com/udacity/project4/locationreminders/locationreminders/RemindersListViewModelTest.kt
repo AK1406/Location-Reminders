@@ -4,7 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
-import com.udacity.project4.MainCoroutineRule
+import com.udacity.project4.locationreminders.MainCoroutineRule
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.reminderslist.RemindersListViewModel
 import com.udacity.project4.locationreminders.data.FakeDataSource
@@ -23,7 +23,7 @@ import org.koin.core.context.stopKoin
 //@Config(sdk = [Build.VERSION_CODES.P])
 class RemindersListViewModelTest {
 
-    //TODO: provide testing to the RemindersListViewModel and its live data objects
+    //DONE: provide testing to the RemindersListViewModel and its live data objects
 
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
@@ -60,8 +60,6 @@ class RemindersListViewModelTest {
     private val reminder3 = list[2]
 
     private lateinit var fakeDataSource: FakeDataSource
-
-    // class under test
     private lateinit var reminderListViewModel: RemindersListViewModel
 
     @After
@@ -70,7 +68,7 @@ class RemindersListViewModelTest {
     }
 
     @Test
-    fun getRemindersList_notEmpty() {
+    fun getRemindersList() {
         val remindersList = mutableListOf(reminder1, reminder2, reminder3)
         fakeDataSource = FakeDataSource(remindersList)
         reminderListViewModel = RemindersListViewModel(ApplicationProvider.getApplicationContext(), fakeDataSource)

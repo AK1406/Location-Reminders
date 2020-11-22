@@ -33,6 +33,8 @@
     <string name="welcome">Welcome</string>
     <string name="err_enter_title">Please enter title</string>
     <string name="err_select_location">Please select location</string>
+    <string name="permissions_request">Please grant us  permissions</string>
+    <string name="permissions_request_settings">Go to settings to manually grant us denied permissions</string>
 
     <!--    Geofence Status Strings-->
     <string name="geofences_added">Clue Geofence added.</string>

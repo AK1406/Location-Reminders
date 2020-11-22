@@ -1,21 +1,32 @@
 package com.udacity.project4.locationreminders
 
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
+import com.udacity.project4.FakeDataSource
 import com.udacity.project4.R
+import com.udacity.project4.locationreminders.data.dto.ReminderDTO
+import com.udacity.project4.locationreminders.data.dto.Result
+import com.udacity.project4.locationreminders.reminderslist.ReminderListFragment
+import com.udacity.project4.locationreminders.reminderslist.ReminderListFragmentDirections
+import com.udacity.project4.locationreminders.reminderslist.RemindersListViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
+import org.hamcrest.Description
+import org.hamcrest.Matcher
 import org.hamcrest.Matchers
+import org.hamcrest.TypeSafeMatcher
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -25,42 +36,27 @@ import org.koin.dsl.module
 import org.koin.test.AutoCloseKoinTest
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
-import android.view.View
-import android.view.ViewGroup
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.*
-import com.udacity.project4.locationreminders.data.dto.ReminderDTO
-import com.udacity.project4.locationreminders.data.FakeDataSource
-import com.udacity.project4.locationreminders.locationreminders.ReminderListFragmentDirections
-import com.udacity.project4.locationreminders.reminderslist.ReminderListFragment
-import com.udacity.project4.locationreminders.reminderslist.RemindersListViewModel
-import org.hamcrest.Description
-import org.hamcrest.Matcher
-import org.hamcrest.TypeSafeMatcher
 
 
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
 //UI Testing
 @MediumTest
-class ReminderListFragmentTest :  AutoCloseKoinTest(){
+class ReminderListFragmentTest :
+        AutoCloseKoinTest() {
 
-//    TODO: test the navigation of the fragments.
-//    TODO: test the displayed data on the UI.
-//    TODO: add testing for the error messages.
-
+//    DONE: test the navigation of the fragments.
+//    DONE: test the displayed data on the UI.
+//    DONE: add testing for the error messages.
 
     private lateinit var fakeDataSource: FakeDataSource
     private lateinit var reminderListViewModel: RemindersListViewModel
-    val scenario = launchFragmentInContainer<ReminderListFragment>(Bundle(), R.style.AppTheme)
-
 
     @Before
     fun setup() {
         fakeDataSource = FakeDataSource()
         reminderListViewModel =
-            RemindersListViewModel(ApplicationProvider.getApplicationContext(), fakeDataSource)
-
+                RemindersListViewModel(ApplicationProvider.getApplicationContext(), fakeDataSource)
         stopKoin()
 
         val myModule = module {
@@ -68,67 +64,69 @@ class ReminderListFragmentTest :  AutoCloseKoinTest(){
                 reminderListViewModel
             }
         }
-        //a new koin module
+        // new koin module
         startKoin {
             modules(listOf(myModule))
         }
     }
 
     @Test
-    fun remindersList() = runBlockingTest {
+    fun displayRemindersList() = runBlockingTest {
+
         val list = listOf<ReminderDTO>(
-            ReminderDTO("title", "description", "location", 0.0, 0.0),
-            ReminderDTO(
-                "title",
-                "description",
-                "location",
-                (-360..360).random().toDouble(),
-                (-360..360).random().toDouble()
-            ),
-            ReminderDTO(
-                "title",
-                "description",
-                "location",
-                (-360..360).random().toDouble(),
-                (-360..360).random().toDouble()
-            ),
-            ReminderDTO(
-                "title",
-                "description",
-                "location",
-                (-360..360).random().toDouble(),
-                (-360..360).random().toDouble()
-            )
+                ReminderDTO("title", "description", "location", (-360..360).random().toDouble(),(-360..360).random().toDouble()),
+                ReminderDTO(
+                        "title",
+                        "description",
+                        "location",
+                        (-360..360).random().toDouble(),
+                        (-360..360).random().toDouble()
+                ),
+                ReminderDTO(
+                        "title",
+                        "description",
+                        "location",
+                        (-360..360).random().toDouble(),
+                        (-360..360).random().toDouble()
+                ),
+                ReminderDTO(
+                        "title",
+                        "description",
+                        "location",
+                        (-360..360).random().toDouble(),
+                        (-360..360).random().toDouble()
+                )
         )
+
         list.forEach {
             fakeDataSource.saveReminder(it)
         }
 
         // GIVEN -
-        val reminders = (fakeDataSource.getReminders() as? Result.Success).data
+        val reminders = (fakeDataSource.getReminders() as? Result.Success)?.data
 
-        // WHEN - Details fragment launched to display task
         val firstItem = reminders!![0]
 
         onView(
-            Matchers.allOf(
-                withText(firstItem.location),
-                childAtPosition(
-                    childAtPosition(
-                        ViewMatchers.withId(R.id.reminderCardView),
-                        0
-                    ),
-                    2
-                ),
-                isDisplayed()
-            )
+                Matchers.allOf(
+                        withText(firstItem.location),
+                        childAtPosition(
+                                childAtPosition(
+                                        ViewMatchers.withId(R.id.reminderCardView),
+                                        0
+                                ),
+                                2
+                        ),
+                        isDisplayed()
+                )
         )
-            .check(matches(withText(firstItem.location)))
+                .check(matches(withText(firstItem.location)))
     }
 
     @Test
-    fun remindersList_NavigateToAddReminder() = runBlockingTest {
+    fun navigateToAddReminder() = runBlockingTest {
         // WHEN - Details fragment launched to display task
+        val scenario = launchFragmentInContainer<ReminderListFragment>(Bundle(), R.style.AppTheme)
         val navController = mock(NavController::class.java)
         scenario.onFragment {
             Navigation.setViewNavController(it.view!!, navController)
@@ -140,15 +138,15 @@ class ReminderListFragmentTest :  AutoCloseKoinTest(){
     }
 
     @Test
-    fun remindersList_ErrorSnackBackShown() = runBlockingTest {
+    fun errorSnackBackShown() = runBlockingTest {
         fakeDataSource.deleteAllReminders()
         // WHEN - Details fragment launched to display task
         onView(withText("No reminders found"))
-            .check(matches(isDisplayed()))
+                .check(matches(isDisplayed()))
     }
 
     private fun childAtPosition(
-        parentMatcher: Matcher<View>, position: Int
+            parentMatcher: Matcher<View>, position: Int
     ): Matcher<View> {
 
         return object : TypeSafeMatcher<View>() {

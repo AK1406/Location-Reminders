@@ -47,7 +47,28 @@ class RemindersDaoTest {
 
 
     @Test
-    fun saveReminderAndGetById() = runBlockingTest {
+    fun getReminders() = runBlockingTest {
+        // GIVEN - insert a reminder
+        val reminder = ReminderDTO("title", "description","location",(-360..360).random().toDouble(),(-360..360).random().toDouble())
+
+        database.reminderDao().saveReminder(reminder)
+
+        // WHEN - Get reminders from the database
+        val reminders = database.reminderDao().getReminders()
+
+        // THEN - There is only 1 reminder in the database
+        assertThat(reminders.size, `is`(1))
+        assertThat(reminders[0].id, `is`(reminder.id))
+        assertThat(reminders[0].title, `is`(reminder.title))
+        assertThat(reminders[0].description, `is`(reminder.description))
+        assertThat(reminders[0].location, `is`(reminder.location))
+        assertThat(reminders[0].latitude, `is`(reminder.latitude))
+        assertThat(reminders[0].longitude, `is`(reminder.longitude))
+    }
+
+
+    @Test
+    fun insertReminder_GetById() = runBlockingTest {
         // GIVEN - Insert a reminder.
         val reminder = ReminderDTO("title", "description","location",(-360..360).random().toDouble(),(-360..360).random().toDouble())
         database.reminderDao().saveReminder(reminder)
@@ -75,31 +96,10 @@ class RemindersDaoTest {
         assertNull(loaded)
     }
 
-    @Test
-    fun insertRemindersAndGetReminders() = runBlockingTest {
-        // GIVEN - insert a reminder
-        val reminder = ReminderDTO("title", "description","location",(-360..360).random().toDouble(),(-360..360).random().toDouble())
-
-        database.reminderDao().saveReminder(reminder)
-
-        // WHEN - Get reminders from the database
-        val reminders = database.reminderDao().getReminders()
-
-        // THEN - There is only 1 reminder in the database, and contains the expected values
-        assertThat(reminders.size, `is`(1))
-        assertThat(reminders[0].id, `is`(reminder.id))
-        assertThat(reminders[0].title, `is`(reminder.title))
-        assertThat(reminders[0].description, `is`(reminder.description))
-        assertThat(reminders[0].location, `is`(reminder.location))
-        assertThat(reminders[0].latitude, `is`(reminder.latitude))
-        assertThat(reminders[0].longitude, `is`(reminder.longitude))
-    }
-
-
 
     @Test
-    fun deleteTasksAndGettingTasks() = runBlockingTest {
-        // Given a reminder inserted
+    fun deleteReminders() = runBlockingTest {
+        // Given - reminders inserted
         val remindersList = listOf<ReminderDTO>(ReminderDTO("title", "description","location",(-360..360).random().toDouble(),(-360..360).random().toDouble()),
                 ReminderDTO("title", "description","location",(-360..360).random().toDouble(),(-360..360).random().toDouble()),
                 ReminderDTO("title", "description","location",(-360..360).random().toDouble(),(-360..360).random().toDouble()),
@@ -109,7 +109,7 @@ class RemindersDaoTest {
             database.reminderDao().saveReminder(it)
         }
 
-        // When deleting all reminders
+        // WHEN - deleting all reminders
         database.reminderDao().deleteAllReminders()
 
         // THEN - The list is empty

@@ -4,7 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import com.google.common.truth.Truth.assertThat
-import com.udacity.project4.locationreminders.FakeReminderDao
+import com.udacity.project4.FakeReminderDao
 import com.udacity.project4.MainCoroutineRule
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
@@ -44,20 +44,18 @@ class RemindersLocalRepositoryTest {
     private val newReminder = list[3]
 
     private lateinit var fakeRemindersDao: FakeReminderDao
-    // Class under test
     private lateinit var remindersLocalRepository: RemindersLocalRepository
 
     @Before
     fun setup() {
         fakeRemindersDao = FakeReminderDao()
-        // Get a reference to the class under test
         remindersLocalRepository = RemindersLocalRepository(
                 fakeRemindersDao, Dispatchers.Unconfined
         )
     }
 
     @Test
-    fun saveReminder_savesToLocalCache() = runBlockingTest {
+    fun savesToLocalCache() = runBlockingTest {
         var list = mutableListOf<ReminderDTO>()
         list.addAll(fakeRemindersDao.remindersServiceData.values)
         // Make sure newReminder is not in the local datasources or cache
@@ -79,11 +77,10 @@ class RemindersLocalRepositoryTest {
     }
 
     @Test
-    fun getReminderById_existsInLocalCache() = runBlockingTest {
-        // Make sure newReminder is not in the local datasources or cache
+    fun getReminderByIdThatExistsInLocalCache() = runBlockingTest {
+        // Make sure newReminder is not in the local cache
         assertThat((remindersLocalRepository.getReminder(reminder1.id) as? Result.Error)?.message).isEqualTo(
-                "Reminder not found!"
-        )
+                "Reminder not found!")
 
         fakeRemindersDao.remindersServiceData[reminder1.id] = reminder1
 
@@ -100,29 +97,28 @@ class RemindersLocalRepositoryTest {
     }
 
     @Test
-    fun getReminderById_doesNotExistInLocalCache() = runBlockingTest {
-        // When reminder is fetch by id
-        val message = (remindersLocalRepository.getReminder(reminder1.id) as? Result.Error)?.message
+    fun getReminderByIdThatDoesNotExistInLocalCache() = runBlockingTest {
 
+        val message = (remindersLocalRepository.getReminder(reminder1.id) as? Result.Error)?.message
         Assert.assertThat<String>(message, CoreMatchers.notNullValue())
-        assertThat(message).isEqualTo("Reminder not found!")
+        assertThat(message).isEqualTo("Reminder does not exist !")
 
     }
 
     @Test
-    fun deleteAllReminders_getFromLocalCacheRetrievesEmpty() = runBlockingTest {
+    fun deleteAllReminders_EmptyListFetchedFromLocalCache() = runBlockingTest {
         assertThat((remindersLocalRepository.getReminders() as? Result.Success)?.data).isEmpty()
 
         fakeRemindersDao.remindersServiceData[reminder1.id] = reminder1
         fakeRemindersDao.remindersServiceData[reminder2.id] = reminder2
         fakeRemindersDao.remindersServiceData[reminder3.id] = reminder3
 
-        // When a reminders are fetched from  repository - should not be empty
+        // When - reminders are fetched from  repository - should not be empty
         assertThat((remindersLocalRepository.getReminders() as? Result.Success)?.data).isNotEmpty()
 
         remindersLocalRepository.deleteAllReminders()
 
-        // Then fetching should return empty list
+        // Then - fetching should return empty list
         assertThat((remindersLocalRepository.getReminders() as? Result.Success)?.data).isEmpty()
     }
 }
